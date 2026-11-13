@@ -71,6 +71,11 @@ ul, ol { list-style: none; margin: 0; padding: 0; }
 .hero__lado--d { right: var(--gutter); }
 .hero__cta { position: absolute; bottom: 4vh; left: 50%; translate: -50% 0; z-index: 3; white-space: nowrap; }
 
+.trat__janela, .trat__lista li::before { display: none; }
+.hero__cue { position: absolute; left: 50%; bottom: 0; width: 1px; height: 9vh; background: linear-gradient(var(--ambar), transparent); transform-origin: top; animation: cue 2.2s cubic-bezier(.25,1,.5,1) infinite; z-index: 1; }
+@keyframes cue { 0% { transform: scaleY(0); opacity: 0; } 30% { opacity: 1; } 100% { transform: scaleY(1); opacity: 0; } }
+.hero__cue { display: none; }
+
 /* ---------- seams: the facade's LED corner crosses acts ---------- */
 .corte { width: min(calc(var(--u) * 150), 150px); }
 .s1 { right: 9vw; top: -9vh; }
@@ -180,6 +185,7 @@ ul, ol { list-style: none; margin: 0; padding: 0; }
 /* ---------- phone ---------- */
 @media (max-width: 899px) {
   :root { --act-pad: 13vh; }
+
   .wow-badge { width: 76px; top: 14px; left: 14px; }
   .nav__link, .nav__principal { display: none; } /* the bottom bar carries the actions on phones */
   .barra { display: flex; position: fixed; left: 12px; right: 12px; bottom: max(12px, env(safe-area-inset-bottom)); gap: 8px; }
@@ -222,4 +228,39 @@ ul, ol { list-style: none; margin: 0; padding: 0; }
   .local__dados { flex-direction: column; gap: 4vh; text-align: center; }
   .fecho { padding-bottom: 120px; }
   .fecho__tel { font-size: 11.5vw; }
+
+  :root { --act-pad: 11vh; }
+  /* phone: the hero is a poster, the title low in the frame over the walk, a cue line at the foot */
+  .hero { min-height: 100svh; }
+  .hero__fundo video { object-position: 50% 40%; }
+  .hero__titulo { top: 40%; }
+  .hero__cue { display: block; bottom: calc(52px + 24px + 34px); height: 7vh; }
+  .hero__lado { bottom: calc(52px + 24px + 14px); }
+  .hero__lado--e { left: var(--gutter); } .hero__lado--d { right: var(--gutter); }
+  /* treatments: an arch window of the room on top, numbered items under hairlines */
+  .trat__palco { padding: 10vh var(--gutter) 8vh; gap: 0; }
+  .trat__rotulo { position: static; text-align: left; margin-bottom: 18px; }
+  .trat__janela { display: block; width: 62vw; aspect-ratio: 3 / 4; border-radius: 999px 999px 0 0; overflow: hidden; margin: 0 0 6vh auto; }
+  .trat__janela img { width: 100%; height: 100%; object-fit: cover; object-position: 70% 50%; }
+  .trat__lista li { padding: 22px 0; }
+  .trat__lista li::before { content: attr(data-n) " /03"; display: block; margin-bottom: 10px; font-family: var(--f-body); font-weight: 600; font-size: 12px; letter-spacing: 0.14em; color: var(--bronze); }
+  .trat__lista .wow-display { font-size: 7.8vw; }
+  .trat__lista li .wow-display { color: var(--ink); }
+  /* FACE: a tall window, the word fills it */
+  .mega__quadro { width: 88vw; }
+  .mega__foto { aspect-ratio: 3 / 4; }
+  .mega__foto img { object-position: 30% 50%; }
+  .mega__palavra { font-size: 36vw; }
+  /* results: the pairs are the picture, the title reads as a caption above them */
+  .res__palco { padding: 12vh var(--gutter) 12vh; gap: 6vh; }
+  .res__titulo { font-size: 15vw; }
+  .res__caso { font-size: 6.5vw; padding-bottom: 10px; border-bottom: 1px solid rgb(224 180 106 / 0.4); width: 100%; }
+  .res__par figure { width: min(43vw, 285px); }
+  .res__ghost { font-size: 60vw; left: 10%; bottom: -3vh; }
+  /* clinic: the two renders step like on desktop */
+  .local__titulo { font-size: 8.2vw; }
+  .local__par { gap: 0; }
+  .local__f1 { aspect-ratio: 4 / 3; width: 84%; }
+  .local__f2 { width: 58%; margin-top: -14vw; }
+  .local__led { left: 2%; top: 58%; width: 24%; rotate: 0deg; }
 }
