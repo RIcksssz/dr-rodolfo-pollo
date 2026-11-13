@@ -1,0 +1,225 @@
+/* Dr. Rodolfo Pollo on the wow runtime: brand tokens + composition. Motion lives in wow.js. */
+:root {
+  --f-display: "Bodoni Moda", "Didot", serif;
+  --f-script: "Pinyon Script", cursive;
+  --f-body: "Inter", system-ui, sans-serif;
+  --w-display: 500;
+  --t-script: 1.05;
+  --tr-display: -0.01em;
+  --noite: #141312; --gesso: #F4F2EE; --travertino: #E9E3D8; --concreto: #B9B4AC;
+  --ambar: #E0B46A; --bronze: #7A5C24;
+  --ink: #141312; --ink-soft: #4A4640; --noite-ink: #F4F2EE; --noite-soft: #C4BDB1;
+  --act-pad: 18vh;
+}
+* { box-sizing: border-box; }
+html { background: var(--noite); }
+body { font-optical-sizing: none; margin: 0; background: var(--gesso); color: var(--ink); font-family: var(--f-body); font-size: var(--t-body); -webkit-font-smoothing: antialiased; overflow-x: clip; }
+img, video { display: block; max-width: 100%; height: auto; }
+a { color: inherit; }
+figure { margin: 0; }
+ul, ol { list-style: none; margin: 0; padding: 0; }
+.wow-label { font-weight: 600; }
+.sr-only { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
+.skip { position: fixed; left: 16px; top: -60px; z-index: 200; background: var(--gesso); color: var(--noite); padding: 10px 16px; border-radius: 8px; }
+.skip:focus { top: 16px; }
+:focus-visible { outline: 3px solid var(--bronze); outline-offset: 4px; border-radius: 4px; }
+[data-wow-theme="dark"] :focus-visible, .wow-dark .chrome :focus-visible { outline-color: var(--ambar); }
+.wow-script { color: var(--bronze); }
+[data-wow-theme="dark"] .wow-script { color: var(--ambar); }
+
+/* ---------- loader ---------- */
+.loader { background: var(--noite); color: var(--noite-ink); overflow: hidden; }
+.loader__ghost { position: absolute; font-family: var(--f-script); font-size: 44vw; opacity: 0.05; line-height: 1; white-space: nowrap; transform: rotate(-8deg); }
+.loader__lockup { position: relative; display: grid; justify-items: center; gap: 22px; }
+.loader__nome { margin: 0; font-family: var(--f-display); text-transform: uppercase; letter-spacing: 0.18em; font-size: max(22px, calc(var(--u) * 34)); }
+.loader__linha { width: 1px; height: 64px; background: var(--ambar); }
+.loader .wow-label { color: var(--noite-soft); }
+
+/* ---------- chrome ---------- */
+.chrome { --chrome-ink: var(--ink); transition: color 0.4s; }
+.wow-dark .chrome { --chrome-ink: var(--noite-ink); }
+.wow-badge { color: var(--chrome-ink); text-decoration: none; }
+.badge__rp { font-family: var(--f-display); font-size: max(20px, calc(var(--u) * 26)); letter-spacing: 0.02em; }
+.nav__principal { font-family: var(--f-display); text-transform: uppercase; letter-spacing: 0.06em; font-size: max(17px, calc(var(--u) * 21)); line-height: 1.1; text-decoration: underline; text-decoration-thickness: 1px; text-underline-offset: 5px; }
+.nav__link { text-decoration: none; }
+.nav__link:hover, .nav__principal:hover { color: var(--bronze); }
+.wow-dark .nav__link:hover, .wow-dark .nav__principal:hover { color: var(--ambar); }
+.barra { display: none; }
+
+/* ---------- acts ---------- */
+.ato { position: relative; background: var(--bg, var(--gesso)); padding: var(--act-pad) var(--gutter); text-align: center; }
+.ato--gesso { --bg: var(--gesso); }
+.wow-body { color: var(--ink-soft); }
+.janela { overflow: hidden; border-radius: calc(var(--u) * 10); }
+.janela img { width: 100%; height: 100%; object-fit: cover; }
+.botao { display: inline-flex; align-items: center; min-height: 52px; padding: 0 28px; border-radius: 999px; background: var(--ambar); color: var(--noite); font-weight: 600; text-decoration: none; font-size: 17px; }
+.botao:hover { background: var(--noite-ink); }
+.botao--linha { background: transparent; color: var(--noite-ink); border: 1px solid rgb(244 242 238 / 0.45); }
+.botao--linha:hover { background: rgb(244 242 238 / 0.1); }
+
+/* ---------- 1 hero ---------- */
+.hero { --bg: var(--noite); --ht: calc(var(--u) * 176); position: relative; height: 100vh; height: 100svh; min-height: 640px; overflow: hidden; text-align: center; background: var(--bg); color: var(--noite-ink); }
+.hero__fundo { position: absolute; inset: 0; }
+.hero__fundo video { width: 100%; height: 100%; object-fit: cover; }
+/* scrim: the walk-through sinks into the night so the title and labels pass AA */
+.hero__fundo::after { content: ""; position: absolute; inset: 0; background: linear-gradient(rgb(20 19 18 / 0.7), rgb(20 19 18 / 0.5) 45%, rgb(20 19 18 / 0.5) 62%, rgb(20 19 18 / 0.78)); }
+.hero__titulo { position: absolute; top: 47%; translate: 0 -50%; left: 0; right: 0; font-size: var(--ht); padding: 0 var(--gutter); z-index: 1; }
+.hero__a, .hero__b { display: block; }
+.hero__a { letter-spacing: 0.04em; }
+.hero__lado { position: absolute; bottom: calc(4vh + 16px); z-index: 1; color: var(--noite-soft); }
+.hero__lado--e { left: calc(var(--gutter) + var(--rail)); }
+.hero__lado--d { right: var(--gutter); }
+.hero__cta { position: absolute; bottom: 4vh; left: 50%; translate: -50% 0; z-index: 3; white-space: nowrap; }
+
+/* ---------- seams: the facade's LED corner crosses acts ---------- */
+.corte { width: min(calc(var(--u) * 150), 150px); }
+.s1 { right: 9vw; top: -9vh; }
+.s2 { left: 9vw; top: -12vh; rotate: 90deg; }
+.s3 { right: 12vw; top: -8vh; rotate: 180deg; }
+.s5 { left: 10vw; top: -10vh; rotate: 270deg; }
+.s6 { right: 10vw; top: -9vh; }
+
+/* ---------- 2 o cirurgião ---------- */
+.cir { display: grid; justify-items: center; gap: calc(var(--u) * 30); }
+.cir__titulo { margin: 0; font-size: calc(var(--u) * 116); width: 100%; padding-left: var(--rail); }
+.cir__a { display: block; text-align: left; padding-left: 4vw; }
+.cir__b { display: block; text-align: right; padding-right: 12vw; }
+.cir__linha { display: grid; grid-template-columns: auto 1fr; align-items: end; gap: 6vw; width: 100%; max-width: calc(var(--u) * 1180); margin-top: calc(var(--u) * 60); padding-left: var(--rail); text-align: left; }
+.cir__foto { width: min(36vw, 640px); aspect-ratio: 1024 / 964; } /* budget: file 1024px */
+.cir__texto { display: grid; gap: calc(var(--u) * 26); padding-bottom: calc(var(--u) * 20); }
+.cir__frase { margin: 0; }
+.cir__cro { color: var(--ink); line-height: 1.8; border-top: 1px solid rgb(20 19 18 / 0.2); padding-top: 16px; }
+
+/* ---------- 3 tratamentos (pinned list) ---------- */
+.trat { --bg: var(--travertino); padding: 0; }
+.trat__palco { position: relative; display: grid; grid-template-columns: 1.5fr 1fr; align-items: center; gap: 4vw; padding: 12vh calc(var(--gutter) + var(--rail)) 8vh; height: 100vh; height: 100svh; text-align: left; }
+.trat__rotulo { position: absolute; top: 7vh; left: 0; right: 0; text-align: center; }
+.trat__lista { display: grid; gap: calc(var(--u) * 22); }
+.trat__lista .wow-display { font-size: min(calc(var(--u) * 80), 11vh); display: block; }
+.trat__lista li.is-on .wow-display { color: var(--bronze); }
+.trat__lista .wow-body { margin: 12px 0 6px; max-width: 30em; }
+@media (min-width: 900px) { .wow-js:not(.wow-still) .trat__lista li:not(.is-on) .wow-body { display: none; } }
+/* arch window on the room; the step number sits on a scrim at its foot */
+.trat__arco { position: relative; width: min(27vw, 50vh); aspect-ratio: 3 / 4; justify-self: center; border-radius: 999px 999px 0 0; overflow: hidden; display: grid; place-items: end center; }
+.trat__arco img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; object-position: 70% 50%; }
+.trat__arco::after { content: ""; position: absolute; inset: 45% 0 0; background: linear-gradient(transparent, rgb(20 19 18 / 0.72)); }
+.trat__arco span { grid-area: 1 / 1; position: relative; z-index: 1; font-family: var(--f-display); font-size: min(11vw, 20vh); line-height: 1; color: var(--gesso); padding-bottom: 4%; opacity: 0; transform: translateY(12%); transition: opacity 0.6s cubic-bezier(.25,1,.5,1), transform 0.8s cubic-bezier(.25,1,.5,1); }
+.trat[data-step="0"] .trat__arco span:nth-of-type(1), .trat[data-step="1"] .trat__arco span:nth-of-type(2), .trat[data-step="2"] .trat__arco span:nth-of-type(3) { opacity: 1; transform: none; }
+/* still: natural height, every item open, the arch carries only the room */
+.wow-still .trat__palco { height: auto; padding-block: 20vh 14vh; }
+.wow-still .trat__arco span, .wow-still .trat__arco::after { display: none; }
+
+/* ---------- 4 mega word over the consulting room ---------- */
+.mega { --bg: var(--concreto); min-height: 100vh; display: grid; justify-items: center; align-content: center; gap: 5vh; }
+.mega__quadro { position: relative; width: min(60vw, 830px); } /* budget: file 1280px */
+.mega__foto { aspect-ratio: 16 / 9; position: relative; }
+.mega__foto::after { content: ""; position: absolute; inset: 0; background: rgb(20 19 18 / 0.45); }
+.mega__sobre { position: absolute; inset: 0 -30vw; display: grid; place-items: center; pointer-events: none; }
+.mega__palavra { font-size: calc(var(--u) * 330); white-space: nowrap; letter-spacing: 0.02em; color: var(--gesso); text-shadow: 0 2px 40px rgb(20 19 18 / 0.45); }
+.mega__legenda { color: var(--ink); }
+
+/* ---------- 5 pico: before and after ---------- */
+.res { --bg: var(--noite); color: var(--noite-ink); padding: 0; }
+.res__palco { position: relative; height: 100vh; height: 100svh; display: grid; grid-template-columns: 1fr auto; align-items: center; gap: 6vw; padding: 10vh calc(var(--gutter) + 6vw) 8vh calc(var(--gutter) + var(--rail)); overflow: hidden; text-align: left; }
+.res__texto { display: grid; gap: 4vh; position: relative; z-index: 1; }
+.res__rotulo, .res__nota { color: var(--noite-soft); }
+.res__nota { line-height: 1.8; }
+.res__titulo { font-size: min(calc(var(--u) * 150), 22vh); }
+.res__a, .res__b { display: block; }
+.res__b { padding-left: 1.1em; }
+.res__titulo .wow-script { padding-left: 1.6em; }
+.res__casos { display: grid; position: relative; z-index: 1; }
+.res__casos li { display: grid; gap: 2.5vh; justify-items: center; }
+.res__caso { margin: 0; color: var(--ambar); }
+.res__par { display: flex; gap: calc(var(--u) * 18); }
+/* budget: each half is about 445px wide, so at most 288px CSS; the stage is one screen tall, so height caps it too */
+.res__par figure { width: min(19vw, 285px, 30vh); display: grid; gap: 12px; justify-items: center; }
+.res__par .janela { aspect-ratio: 1 / 1.9; width: 100%; }
+.res__par figcaption { color: var(--noite-soft); }
+@media (min-width: 900px) {
+  .wow-js:not(.wow-still) .res__casos li { grid-area: 1 / 1; }
+  .wow-js:not(.wow-still) .res__casos [data-wow-step]:not(.is-on) { opacity: 0; transform: translateY(3rem); }
+}
+/* still: cases stack with air, stage at natural height */
+.wow-still .res__palco { height: auto; padding-block: 20vh; align-items: start; overflow: clip; }
+.wow-still .res__casos { gap: 12vh; }
+@media (min-width: 900px) { .wow-still .res__texto { position: sticky; top: 20vh; } }
+.res__ghost { position: absolute; bottom: -6vh; left: 30%; transform: rotate(-6deg); font-family: var(--f-script); font-size: 34vw; line-height: 1; color: var(--noite-ink); opacity: 0.045; pointer-events: none; white-space: nowrap; }
+
+/* ---------- 6 a clínica ---------- */
+.local { display: grid; justify-items: center; gap: calc(var(--u) * 30); }
+.local__titulo { margin: 0; width: 100%; padding-left: var(--rail); }
+.local__a { display: block; text-align: left; padding-left: 6vw; }
+.local__b { display: block; text-align: right; padding-right: 12vw; }
+/* offset pair: the second window sits higher and further right; the LED corner overlaps both */
+.local__par { position: relative; display: grid; grid-template-columns: 1.55fr 1fr; align-items: end; gap: 4vw; width: 100%; max-width: calc(var(--u) * 1240); margin-top: calc(var(--u) * 70); padding: 0 9vw 0 var(--rail); }
+.local__f1 { aspect-ratio: 16 / 10; margin-top: calc(var(--u) * 120); } /* at most about 700px CSS; file 1280px */
+.local__f2 { aspect-ratio: 4 / 5; margin-bottom: calc(var(--u) * 120); }
+.local__f2 img { object-position: 62% 50%; }
+.local__led { position: absolute; left: calc(var(--rail) + 55%); top: 30%; width: 13%; rotate: 180deg; pointer-events: none; }
+.local__nota { color: var(--ink-soft); }
+.local__dados { display: flex; align-items: center; justify-content: center; gap: 6vw; margin-top: calc(var(--u) * 40); text-align: left; }
+.local__dados address { font-style: normal; color: var(--ink); margin: 0; }
+.local__dados address a { text-decoration: none; }
+.local__dados address a:hover { text-decoration: underline; }
+.anel { position: relative; width: 148px; aspect-ratio: 1; display: grid; place-items: center; text-align: center; text-decoration: none; }
+.anel svg { position: absolute; inset: 0; transform: rotate(-90deg); }
+.anel circle { fill: none; stroke: var(--ink); stroke-width: 1.5; vector-effect: non-scaling-stroke; }
+.anel:hover { color: var(--bronze); }
+
+/* ---------- 7 fecho ---------- */
+.fecho { --bg: var(--noite); color: var(--noite-ink); min-height: 100vh; display: grid; justify-items: center; align-content: center; gap: 4vh; padding-bottom: 6vh; }
+.fecho .wow-label { color: var(--noite-soft); }
+.fecho__tel { font-size: calc(var(--u) * 170); }
+.fecho__tel a { text-decoration: none; }
+.fecho__tel a:hover { color: var(--ambar); }
+.fecho__acoes { display: flex; flex-wrap: wrap; gap: 14px; justify-content: center; }
+.rodape { margin-top: 8vh; display: grid; gap: 6px; font-weight: 400; letter-spacing: 0.06em; }
+.rodape p { margin: 0; }
+
+/* ---------- phone ---------- */
+@media (max-width: 899px) {
+  :root { --act-pad: 13vh; }
+  .wow-badge { width: 76px; top: 14px; left: 14px; }
+  .nav__link, .nav__principal { display: none; } /* the bottom bar carries the actions on phones */
+  .barra { display: flex; position: fixed; left: 12px; right: 12px; bottom: max(12px, env(safe-area-inset-bottom)); gap: 8px; }
+  /* one style for every ground: a night pill with a light hairline + a light pill, both lifted by a shadow */
+  .barra a { display: grid; place-items: center; min-height: 52px; border-radius: 999px; font-weight: 600; text-decoration: none; font-size: 15px; box-shadow: 0 6px 18px rgb(0 0 0 / 0.35); }
+  .barra__zap { flex: 1.9; background: var(--noite); color: #fff; border: 1px solid rgb(244 242 238 / 0.55); }
+  .barra__ligar { flex: 1; background: #fff; color: var(--noite); border: 1px solid rgb(20 19 18 / 0.3); }
+  .hero { --ht: 17.5vw; }
+  .hero__titulo { top: 46%; }
+  .hero__lado { bottom: calc(52px + 24px + 12px); font-size: 12px; letter-spacing: 0.16em; margin: 0; }
+  .hero__lado--e { left: var(--gutter); }
+  .hero__lado--d { right: var(--gutter); }
+  .hero__cta { display: none; }
+  .corte { width: 20vw; }
+  .cir__titulo, .local__titulo { font-size: 11.5vw; padding-left: 0; }
+  .cir__a, .cir__b, .local__a, .local__b { padding: 0; }
+  .cir__linha { grid-template-columns: 1fr; padding-left: 0; gap: 28px; margin-top: 4vh; }
+  .cir__foto { width: 100%; }
+  .cir__frase { max-width: none; }
+  .trat__palco { height: auto; grid-template-columns: 1fr; padding: 16vh var(--gutter) 10vh; }
+  .trat__rotulo { top: 8vh; }
+  .trat__lista .wow-display { font-size: 8.2vw; }
+  .trat__lista li { padding: 18px 0; border-top: 1px solid rgb(20 19 18 / 0.15); }
+  .trat__arco { display: none; }
+  .mega { min-height: 0; }
+  .mega__quadro { width: 100%; }
+  .mega__foto { aspect-ratio: 4 / 3; }
+  .mega__sobre { inset: 0; }
+  .mega__palavra { font-size: 30vw; }
+  .res__palco { height: auto; grid-template-columns: 1fr; padding: 16vh var(--gutter) 14vh; gap: 8vh; text-align: center; }
+  .res__titulo { font-size: 17vw; }
+  .res__b, .res__titulo .wow-script { padding-left: 0; }
+  .res__casos { gap: 10vh; }
+  .res__par { gap: 10px; justify-content: center; }
+  .res__par figure { width: min(42vw, 285px); }
+  .local__par { grid-template-columns: 1fr; padding: 0; gap: 14px; margin-top: 5vh; }
+  .local__f1, .local__f2 { margin: 0; }
+  .local__f2 { width: 70%; justify-self: end; }
+  .local__led { left: 6%; top: 46%; width: 22%; }
+  .local__dados { flex-direction: column; gap: 4vh; text-align: center; }
+  .fecho { padding-bottom: 120px; }
+  .fecho__tel { font-size: 11.5vw; }
+}

@@ -1,0 +1,90 @@
+/* wow.css: structural layer for the `wow` skill. Brand files override the tokens, never the mechanics.
+   Fluid unit: --u = 1/1600 of the viewport on desktop, 1/390*0.27 on phones, so the
+   whole composition scales as one picture instead of reflowing at every width. */
+:root {
+  --u: calc(100vw / 1600);
+  /* type ratios measured on the reference build (in --u): display sizes stay huge */
+  --t-mega: calc(var(--u) * 340);  /* one word that fills the width */
+  --t-h1: calc(var(--u) * 192);
+  --t-h2: calc(var(--u) * 136);
+  --t-h3: calc(var(--u) * 96);
+  --t-h4: calc(var(--u) * 63);
+  --t-h5: calc(var(--u) * 40);
+  --t-script: 0.8;                 /* script size in em of the display it crosses; tune per script face so its
+                                      capitals stand about 1.25x the display cap height */
+  /* legibility floor: body and labels never follow --u below these */
+  --t-body: max(17px, calc(var(--u) * 19));
+  --t-label: max(12px, calc(var(--u) * 13));
+  --lh-display: 0.88; --tr-display: -0.024em; --tr-label: 0.14em;
+  --gutter: max(20px, calc(var(--u) * 48));
+  --rail: calc(var(--u) * 120);
+  --hair: 1px;
+}
+@media (max-width: 899px) {
+  :root { --u: calc(100vw / 390 * 0.27); --t-h1: 15vw; --t-h2: 12vw; --t-h3: 9.5vw; --t-h4: 7.4vw; --t-h5: 6vw; --t-mega: 17vw; --rail: 0px; }
+}
+
+/* letter reveals and cutouts travel past the edge; on phones a momentarily wider document makes the
+   browser rescale the viewport and the scroll position jumps back. Clip on both roots. */
+html, body { overflow-x: clip; }
+
+/* ---------- type roles ---------- */
+.wow-display { font-family: var(--f-display); font-size: var(--t-h1); line-height: var(--lh-display); letter-spacing: var(--tr-display); text-transform: uppercase; font-weight: var(--w-display, 400); margin: 0; text-wrap: balance; }
+.wow-display.is-h2 { font-size: var(--t-h2); } .wow-display.is-h3 { font-size: var(--t-h3); }
+.wow-display.is-h4 { font-size: var(--t-h4); line-height: 0.95; } .wow-display.is-h5 { font-size: var(--t-h5); line-height: 1; }
+.wow-display.is-mega { font-size: var(--t-mega); }
+/* the script word crosses the display lines: it sits on its own line with negative margins so it overlaps both */
+.wow-script { display: block; font-family: var(--f-script); text-transform: none; letter-spacing: 0; font-weight: 400;
+  font-size: calc(1em * var(--t-script)); line-height: 0.6; margin: -0.12em 0 -0.08em; position: relative; z-index: 1; }
+.wow-label { font-family: var(--f-body); font-size: var(--t-label); letter-spacing: var(--tr-label); text-transform: uppercase; font-weight: 700; line-height: 1.45; margin: 0; }
+.wow-body { font-family: var(--f-body); font-size: var(--t-body); line-height: 1.55; max-width: 34em; margin: 0; }
+.wow-spaced { letter-spacing: 0.8em; margin-right: -0.8em; } /* "S P A I N" side words */
+
+/* ---------- reveal plumbing ---------- */
+.wow-sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
+.wow-ch, .wow-w { display: inline-block; }
+.wow-ln { padding-bottom: 0.06em; }
+.wow-js:not(.wow-still) [data-wow="chars"], .wow-js:not(.wow-still) [data-wow="lines"] { font-kerning: none; }
+
+/* ---------- persistent chrome ---------- */
+.wow-chrome { position: fixed; inset: 0; pointer-events: none; z-index: 50; color: var(--chrome-ink, currentColor); }
+.wow-chrome > * { pointer-events: auto; }
+.wow-badge { position: absolute; top: calc(var(--u) * 28); left: calc(var(--u) * 28); width: max(84px, calc(var(--u) * 116)); aspect-ratio: 1; display: grid; place-items: center; }
+.wow-badge svg { position: absolute; inset: 0; width: 100%; height: 100%; overflow: visible; }
+.wow-badge text { font-family: var(--f-body); font-size: 9.5px; letter-spacing: 0.32em; text-transform: uppercase; font-weight: 700; fill: currentColor; }
+.wow-nav { position: absolute; top: calc(var(--u) * 34); right: var(--gutter); text-align: right; display: grid; gap: 10px; justify-items: end; }
+.wow-rail { position: absolute; left: calc(var(--u) * 52); top: 30vh; bottom: 12vh; width: 2px; }
+.wow-rail::before { content: ""; position: absolute; inset: 0; background: currentColor; opacity: 0.18; }
+.wow-rail::after { content: ""; position: absolute; left: 0; right: 0; top: 0; height: 100%; background: currentColor; transform-origin: top; transform: scaleY(var(--p, 0)); }
+@media (max-width: 899px) { .wow-rail { display: none; } }
+
+/* ---------- loader: a full-screen ground with a radial hole that grows ---------- */
+.wow-loader { position: fixed; inset: 0; z-index: 100; display: grid; place-items: center; --hole: 0vmax;
+  -webkit-mask: radial-gradient(circle at 50% 50%, transparent var(--hole), #000 calc(var(--hole) + 1px));
+          mask: radial-gradient(circle at 50% 50%, transparent var(--hole), #000 calc(var(--hole) + 1px)); }
+.wow-loader__frame { position: absolute; inset: calc(var(--u) * 14); border: var(--hair) solid currentColor; opacity: 0.18; border-radius: calc(var(--u) * 16); }
+html:not(.wow-js) .wow-loader, .wow-still .wow-loader { display: none; }
+.wow-lock, .wow-lock body { overflow: hidden; }
+
+/* ---------- pinned steps: off steps recede, the on step leads ---------- */
+.wow-js:not(.wow-still) [data-wow-step] { transition: opacity 0.6s cubic-bezier(.25,1,.5,1), transform 0.6s cubic-bezier(.25,1,.5,1); }
+.wow-js:not(.wow-still) [data-wow-pin] [data-wow-step]:not(.is-on) { opacity: 0.22; }
+
+/* ---------- handoffs: the act paints the previous ground, its own ground grows as a disc behind its content.
+   Every act sets --bg (its ground); wow.js copies the previous act's --bg into --prev-bg and drives --hr/--hcy. */
+[data-wow-handoff] { position: relative; isolation: isolate; }
+.wow-js:not(.wow-still) [data-wow-handoff] { background: var(--prev-bg, var(--bg)); }
+.wow-js:not(.wow-still) [data-wow-handoff]::before { content: ""; position: absolute; inset: 0; z-index: -1; background: var(--bg);
+  clip-path: circle(var(--hr, 400vmax) at 50% var(--hcy, 0px)); transition: background-color 0.6s; }
+.wow-js:not(.wow-still) [data-wow-handoff].wow-open::before { clip-path: none; }
+[data-wow-stage] { min-height: 100vh; min-height: 100svh; }
+/* still mode (reduced motion / no JS): stages flow at natural height, every step is on */
+.wow-still [data-wow-stage], html:not(.wow-js) [data-wow-stage] { min-height: 0; }
+
+/* ---------- foreground cutouts cross section seams: put them in a .wow-seam between sections ---------- */
+.wow-seam { position: relative; height: 0; z-index: 10; pointer-events: none; }
+.wow-cut { position: absolute; z-index: 5; pointer-events: none; user-select: none; }
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation-duration: 0.01ms !important; transition-duration: 0.01ms !important; scroll-behavior: auto !important; }
+}
